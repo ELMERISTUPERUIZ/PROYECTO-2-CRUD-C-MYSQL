@@ -1,0 +1,88 @@
+#include <iostream>
+#include <mysql.h>
+using namespace std;
+ 
+char serverdb[] = "localhost";
+char userdb[] = "umg";
+char passworddb[] = "Umg$2019";
+char database[] = "umg";
+ 
+int main() {
+	MYSQL* connection;
+	long alumno_clave;
+	string alumno_nombre;
+	string alumno_correo;
+	string alumno_promedio;
+	string alumno_grado;
+	string alumno_cogrado;
+	string alumno_seccion;
+	string sql;
+	string sql1;
+	const char* query;
+	int result;
+	connection = mysql_init(0);
+	if (connection) 
+	{
+		cout << "La biblioteca MySQL se ha iniciado correctamente" << endl;
+		connection = mysql_real_connect(connection, serverdb, userdb, passworddb, database, 3306, NULL, 0);
+		if (connection) 
+		{
+			cout << "Conexion exitosa a la base de datos" << endl;
+			cout << "Ingrese el nombre del alumno: ";
+			getline(cin, alumno_nombre);
+			cout << "Ingrese el correo del alumno: ";
+			getline(cin, alumno_correo);
+			cout << "Ingrese el promedio del alumno: ";
+			getline(cin, alumno_promedio);
+			cout << "Ingrese la grado del alumno: ";
+			getline(cin, alumno_grado);
+				cout << "Ingrese el codigo del grado del alumno: ";
+			getline(cin, alumno_cogrado);
+				cout << "Ingrese la seccion del alumno: ";
+			getline(cin, alumno_seccion);
+			sql = "INSERT INTO alumno(alumno_nombre, alumno_correo, alumno_promedio, alumno_grado, alumno_cogrado, alumno_seccion) VALUES ('" + alumno_nombre + "', '" + alumno_correo + "', '" + alumno_promedio + "', '" + alumno_grado + "', '" + alumno_cogrado + "', '" + alumno_seccion + "')";    
+            sql1 = "UPDATE alumno SET alumno_nombre = 'evelyn' where alumno_nombre = 'zorro' ";
+			query = sql.c_str();
+			result = mysql_query(connection, query);
+		
+			if (result == 0) 
+			{
+				cout << "Registro guardado";
+			}
+			else
+			{
+				cout << "No fue posible guardar el registro " << mysql_error(connection) << endl;
+			}
+			
+		}
+		MYSQL_ROW row;
+			MYSQL_RES* data;
+			sql = "SELECT * FROM alumno WHERE alumno_grado = 'tercero' AND alumno_seccion = 'a'" ;
+			query = sql.c_str();
+			result = mysql_query(connection, query);
+			if (result == 0) 
+			{
+				cout << "Se han obtenido los datos de forma exitosa" << endl;
+				data = mysql_store_result(connection);
+				int countColumns = mysql_num_fields(data);
+				while(row = mysql_fetch_row(data))
+				{
+					for (int i = 0; i < countColumns; i++)
+					{
+						cout << row[i] << "\t";
+					}
+					cout << endl;
+				}
+			}
+
+		else 
+		{
+			cout << "No fue posible conectarse a la base de datos: " << mysql_error(connection) << endl;
+		}
+	}
+	else 
+	{
+		cout << "No es posible iniciar la biblioteca de MySQL" << endl;
+	}
+	return 0;
+}
